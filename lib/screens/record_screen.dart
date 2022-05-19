@@ -9,7 +9,6 @@ class RecordScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Enviar un reporte de audio"),
         centerTitle: true,
-        backgroundColor: Colors.redAccent,
       ),
       body: Center(
         child: Text("Record voice"),
@@ -25,7 +24,6 @@ class RecordScreen extends StatelessWidget {
             child: const Icon(Icons.mic, color: Colors.redAccent,),
             label: "Audio",
             onTap: (){
- 
             }
           ),
         ]

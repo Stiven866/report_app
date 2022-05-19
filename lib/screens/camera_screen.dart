@@ -77,7 +77,7 @@ class _CameraScreenState extends State<CameraScreen> {
     if(mounted) setState(() {});
 
     _cameras = await  availableCameras();
-    _cameraController = new CameraController(_cameras[0], ResolutionPreset.max);
+    _cameraController = CameraController(_cameras[0], ResolutionPreset.max);
 
     await _cameraController.initialize();
     if(_cameraController.value.hasError){

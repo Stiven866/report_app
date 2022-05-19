@@ -16,6 +16,8 @@ class UserModel {
     );
   }
 
+  
+
   //sending data to our server
   Map<String, dynamic> toMap(){
     return {

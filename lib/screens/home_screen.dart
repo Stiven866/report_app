@@ -1,12 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/models/user.model.dart';
-import 'package:login/screens/camera_screen.dart';
+import 'package:login/screens/add_user_screen.dart';
 import 'package:login/screens/image_screen.dart';
 import 'package:login/screens/login_screen.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:login/screens/record_screen.dart';
+import 'package:login/screens/user_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -16,6 +18,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+
+  List<UserModel> users = [];
 
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loogedInUser = UserModel();
@@ -29,7 +34,17 @@ class _HomeScreenState extends State<HomeScreen> {
       .doc(user!.uid)
       .get()
       .then((value) {
+        print(value.data());
         loogedInUser = UserModel.fromMap(value.data());
+        setState(() {});
+      });
+      FirebaseFirestore.instance
+      .collection("users")
+      .doc(user!.uid)
+      .collection("contacts")
+      .get()
+      .then((value) {
+        value.docs.forEach((doc) => {users.add(UserModel.fromMap(doc.data()))});
         setState(() {});
       });
   }
@@ -38,8 +53,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Welcome"),
+        title: const Text("Contactos"),
         centerTitle: true,
+        actions: [IconButton(
+          icon: const Icon(Icons.output,),
+          onPressed: (){
+            logout(context);
+          },
+        ),
+        ]
       ),
       floatingActionButton: SpeedDial(
         animatedIcon: AnimatedIcons.menu_close,
@@ -67,71 +89,41 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(builder: (context)=> const RecordScreen()));
             }
           ),
+          
           SpeedDialChild(
-            child: const Icon(Icons.output_rounded, color: Colors.redAccent),
-            label: "Salir",
+            child: const Icon(Icons.add, color: Colors.redAccent),
+            label: "Contacto",
             onTap: (){
-              logout(context);
+              Navigator.push(
+                context, 
+                MaterialPageRoute(builder: (context)=> const AddUserScreen()));
             }
           ),
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                height: 180,
-                child: Image.asset("assets/logo.png", fit:BoxFit.contain),
-              ),
-              Text(
-                "Welcome back", 
-                style: TextStyle(
-                  fontSize: 20, 
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-              SizedBox(
-                height: 10,),
-              Text(
-                "${loogedInUser.firstName} ${loogedInUser.secondName}", 
-                style: TextStyle(
-                  color: Colors.black54, 
-                  fontWeight: FontWeight.w500
-                ),
-              ),
-              SizedBox(
-                height: 10,),
-              Text(
-                "${loogedInUser.email}", 
-                style: TextStyle(
-                  color: Colors.black54, 
-                  fontWeight: FontWeight.w500
-                ),
-              ),
-              SizedBox(
-                height: 15,),
-              ActionChip(
-                  label:Text("Logout"),
-                  onPressed: () { 
-                    logout(context);
-                  },
-              ),
-              // GestureDetector(
-              //   child: new Text("Camera: CameraPreview"),
-              //   onTap: (){
-              //     Navigator.push(
-              //       context, 
-              //       MaterialPageRoute(builder: (context)=> ImageScreen()));
-              //   },
-              // )
-            ],
-          ),
-        ),
-      ),
+      body:
+      ListView.builder(
+                itemCount: users.length,
+                itemBuilder: (context, index){
+                  return ListTile(
+                    onTap: (){
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(builder: (context)=>  UserScreen(userModel: users[index])));
+                    },
+                    onLongPress: (){},
+                    title: Text(users[index].firstName! + " " + users[index].secondName!),
+                    subtitle: Text(users[index].email!),
+                    leading: CircleAvatar(
+                      child: Text(users[index].firstName!.substring(0,1)),
+                    ),
+                    trailing: const Icon(
+                      Icons.edit,
+                      color: Colors.redAccent,
+                    ),
+                  );
+                }
+              ) 
     );
   }
 
