@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:login/screens/login_screen.dart';
+import 'package:login/ui/screens/login/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-Future<void> main() async{
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,8 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: LoginScreen(),
+      home: const LoginScreen(),
     );
   }
 }
-
