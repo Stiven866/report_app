@@ -115,17 +115,18 @@ class _AddUserScreenState extends State<AddUserScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Agregar Usuario"),
+          title: const Text("Agregar Contacto"),
           centerTitle: true,
         ),
         body: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(36.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 0.0, horizontal: 36.0),
               child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(
@@ -133,13 +134,13 @@ class _AddUserScreenState extends State<AddUserScreen> {
                       child: Image.asset("assets/images/logo.png",
                           fit: BoxFit.contain),
                     ),
-                    const SizedBox(height: 45),
+                    const SizedBox(height: 15),
                     firstNameField,
                     const SizedBox(height: 20),
                     secondNameField,
                     const SizedBox(height: 20),
                     emailNameField,
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
                     registerButton,
                   ],
                 ),
@@ -149,7 +150,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
         ));
   }
 
-  _registerContact() async {
+  void _registerContact() async {
     var uuid = const Uuid();
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     User? user = _auth.currentUser;

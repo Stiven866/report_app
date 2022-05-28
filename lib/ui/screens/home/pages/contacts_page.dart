@@ -4,11 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/ui/models/user.model.dart';
 import 'package:login/ui/screens/add_user_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:login/ui/screens/home/pages/image_screen.dart';
-import 'package:login/ui/screens/login/login_screen.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:login/ui/screens/home/pages/record_screen.dart';
 import 'package:login/ui/screens/user_screen.dart';
+import 'package:login/ui/screens/home/home_screen.dart';
 
 class ContactsPage extends StatefulWidget {
   final List<UserModel> contacts;
@@ -23,32 +20,9 @@ class ContactsPage extends StatefulWidget {
 }
 
 class _ContactsPageState extends State<ContactsPage> {
-  //List<UserModel> users = [];
-  //User? user = FirebaseAuth.instance.currentUser;
-  //UserModel loogedInUser = UserModel();
-
   @override
   void initState() {
     super.initState();
-
-    /*FirebaseFirestore.instance
-        .collection("users")
-        .doc(user!.uid)
-        .get()
-        .then((value) {
-      print(value.data());
-      loogedInUser = UserModel.fromMap(value.data());
-      setState(() {});
-    });
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(user!.uid)
-        .collection("contacts")
-        .get()
-        .then((value) {
-      value.docs.forEach((doc) => {users.add(UserModel.fromMap(doc.data()))});
-      setState(() {});
-    });*/
   }
 
   @override
@@ -87,9 +61,20 @@ class _ContactsPageState extends State<ContactsPage> {
                         widget.contacts[index].firstName!.substring(0, 1),
                         style: const TextStyle(color: Colors.black)),
                   ),
-                  trailing: Icon(
-                    Icons.edit,
-                    color: Colors.redAccent.shade100,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            _deleteContact(widget.contacts[index]);
+                          },
+                          icon: const Icon(Icons.delete),
+                          color: Colors.redAccent.shade100),
+                      Icon(
+                        Icons.edit,
+                        color: Colors.redAccent.shade100,
+                      ),
+                    ],
                   ),
                 );
               }),
@@ -118,5 +103,23 @@ class _ContactsPageState extends State<ContactsPage> {
             Fluttertoast.showToast(msg: "Máximo de Contactos");
           });
     }
+  }
+
+  void _deleteContact(UserModel contact) async {
+    var collection = FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.user!.uid)
+        .collection("contacts");
+    var snapshot = await collection.where('uid', isEqualTo: contact.uid).get();
+    for (var doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
+    Fluttertoast.showToast(msg: "Contacto eliminado  :.");
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (route) => false);
+
+    setState(() {});
   }
 }

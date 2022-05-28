@@ -7,9 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record_mp3/record_mp3.dart';
+import 'package:login/ui/models/user.model.dart';
+import 'package:login/ui/helpers/send_email_api.dart';
 
 class RecordScreen extends StatefulWidget {
-  const RecordScreen({Key? key}) : super(key: key);
+  final List<UserModel> contacts;
+  final User? user;
+  final UserModel loogedInUser;
+  const RecordScreen(
+      {Key? key, required this.contacts, this.user, required this.loogedInUser})
+      : super(key: key);
 
   @override
   State<RecordScreen> createState() => _RecordScreenState();
@@ -17,7 +24,7 @@ class RecordScreen extends StatefulWidget {
 
 class _RecordScreenState extends State<RecordScreen> {
   final audioPlayer = AudioPlayer();
-  User? user = FirebaseAuth.instance.currentUser;
+  //User? user = FirebaseAuth.instance.currentUser;
   String statusText = "";
   bool isComplete = false;
   bool isRecording = false;
@@ -253,7 +260,7 @@ class _RecordScreenState extends State<RecordScreen> {
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference ref = storage
         .ref()
-        .child("records/${user!.uid}/" + DateTime.now().toString());
+        .child("records/${widget.user!.uid}/" + DateTime.now().toString());
 
     UploadTask uploadTask = ref.putFile(File(recordFilePath!));
     print(recordFilePath);
@@ -262,7 +269,7 @@ class _RecordScreenState extends State<RecordScreen> {
       //widget.onUploadComplete();
       var dowurl = await ref.getDownloadURL();
       var url = dowurl.toString();
-      //_sendEmail(url);
+      sendEmail(url, widget.contacts, widget.loogedInUser);
       print(url);
     } catch (error) {
       print('Error occured while uplaoding to Firebase ${error.toString()}');

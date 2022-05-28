@@ -1,14 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/ui/models/user.model.dart';
-import 'package:login/ui/screens/add_user_screen.dart';
 import 'package:login/ui/screens/home/pages/image_screen.dart';
 import 'package:login/ui/screens/login/login_screen.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:login/ui/screens/home/pages/record_screen.dart';
-import 'package:login/ui/screens/user_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:login/ui/screens/home/pages/contacts_page.dart';
 
@@ -87,14 +83,16 @@ class _HomeScreenState extends State<HomeScreen> {
         contacts: contacts, user: user, loogedInUser: loogedInUser);
     switch (index) {
       case 0:
-        body = const ImageScreen();
+        body = ImageScreen(
+            contacts: contacts, user: user, loogedInUser: loogedInUser);
         break;
       case 1:
         body = ContactsPage(
             contacts: contacts, user: user, loogedInUser: loogedInUser);
         break;
       case 2:
-        body = const RecordScreen();
+        body = RecordScreen(
+            contacts: contacts, user: user, loogedInUser: loogedInUser);
         break;
       default:
         body = ContactsPage(
